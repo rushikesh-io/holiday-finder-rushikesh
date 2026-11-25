@@ -2,37 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------- Theme tokens (RGB channels so Tailwind can apply opacity) ---------- */
 @layer base {
-  html { -webkit-tap-highlight-color: transparent; }
-  body { @apply bg-night-50 text-night-900 antialiased dark:bg-night-950 dark:text-night-100; }
-  :focus-visible { @apply outline-none ring-2 ring-sun-500 ring-offset-2 ring-offset-night-50 dark:ring-offset-night-950; }
+  :root {
+    --paper: 243 246 244;       /* #F3F6F4 cool paper */
+    --paper-deep: 231 237 234;  /* #E7EDEA */
+    --surface: 255 255 255;
+    --ink: 31 42 48;            /* #1F2A30 slate ink */
+    --ink-soft: 77 92 99;
+    --ink-faint: 128 142 148;
+    --rule: 201 211 207;        /* #C9D3CF ruled lines */
+    --letter: 200 16 46;        /* #C8102E calendar red */
+    --letter-soft: 248 222 227;
+    --marker: 242 193 78;       /* #F2C14E highlighter */
+    --marker-soft: 252 238 199;
+    color-scheme: light;
+  }
+
+  .dark {
+    --paper: 21 27 30;
+    --paper-deep: 29 37 41;
+    --surface: 26 33 37;
+    --ink: 229 236 233;
+    --ink-soft: 170 184 181;
+    --ink-faint: 118 133 137;
+    --rule: 50 61 66;
+    --letter: 255 110 124;
+    --letter-soft: 78 34 42;
+    --marker: 242 193 78;
+    --marker-soft: 72 60 30;
+    color-scheme: dark;
+  }
+
+  html { -webkit-tap-highlight-color: transparent; scroll-padding-top: 5rem; }
+  body { @apply bg-paper font-sans text-ink antialiased; }
+  :focus-visible { @apply outline-none ring-2 ring-ink ring-offset-2 ring-offset-paper; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
 }
 
+/* ---------- Reusable pieces ---------- */
 @layer components {
-  .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition
-      disabled:cursor-not-allowed disabled:opacity-40;
+  .control {
+    @apply h-11 rounded-md border border-rule bg-surface px-3 text-base text-ink
+      focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/15;
   }
-  .btn-primary { @apply btn bg-night-900 text-white hover:bg-night-800 dark:bg-sun-400 dark:text-night-950 dark:hover:bg-sun-300; }
-  .btn-sun { @apply btn bg-sun-400 text-night-950 hover:bg-sun-300; }
-  .btn-ghost {
-    @apply btn border border-night-200 bg-white text-night-800 hover:border-sun-500 hover:text-sun-700
-      dark:border-night-700 dark:bg-night-900 dark:text-night-100 dark:hover:border-sun-400 dark:hover:text-sun-300;
+  .button {
+    @apply inline-flex h-11 items-center justify-center gap-2 rounded-md px-4 text-sm font-semibold transition-colors
+      disabled:cursor-not-allowed disabled:opacity-50;
   }
-  .icon-btn {
-    @apply inline-flex h-10 w-10 items-center justify-center rounded-xl border border-night-200 bg-white text-night-700 transition
-      hover:border-sun-500 hover:text-sun-700 dark:border-night-700 dark:bg-night-900 dark:text-night-200 dark:hover:text-sun-300;
-  }
-  .field {
-    @apply w-full rounded-xl border border-night-200 bg-white px-3.5 py-3 text-sm text-night-900 placeholder:text-night-400
-      focus:border-sun-500 focus:outline-none focus:ring-2 focus:ring-sun-500/30
-      dark:border-night-700 dark:bg-night-900 dark:text-night-100;
-  }
-  .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-night-500 dark:text-night-300; }
-  .panel { @apply rounded-3xl border border-night-100 bg-white shadow-card dark:border-night-800 dark:bg-night-900; }
-  .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-night-200 bg-white px-3 py-1.5 text-xs font-medium text-night-700 transition
-      hover:border-sun-500 hover:text-sun-700 dark:border-night-700 dark:bg-night-900 dark:text-night-200 dark:hover:text-sun-300;
-  }
-  .chip-active { @apply border-night-900 bg-night-900 text-white hover:text-white dark:border-sun-400 dark:bg-sun-400 dark:text-night-950 dark:hover:text-night-950; }
+  .button-primary { @apply button bg-ink text-paper hover:bg-ink/85; }
+  .button-quiet { @apply button border border-rule bg-surface text-ink hover:border-ink; }
+  .tag { @apply inline-flex items-center rounded border px-1.5 py-0.5 text-xs font-medium; }
+  .toggle { @apply rounded-md border border-rule bg-surface px-3 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:border-ink hover:text-ink; }
+  .toggle[aria-pressed='true'] { @apply border-ink bg-ink text-paper hover:text-paper; }
 }
+
+/* Brief highlight when jumping to a holiday from the year calendar */
+@keyframes flash {
+  from { background-color: rgb(var(--marker) / 0.55); }
+  to { background-color: transparent; }
+}
+.flash { animation: flash 1.6s ease-out; }

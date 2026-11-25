@@ -1,101 +1,121 @@
-# 🗓️ Holiday Finder Rushikesh
+# Holiday Finder Rushikesh
 
-A clean, responsive web app to **find public holidays for any country and year**. Filter them by month or type, see which ones are coming up next, and export the list to CSV.
-Built with **HTML, Tailwind CSS and vanilla JavaScript (ES modules)**, with no frameworks.
+Find the public holidays for any country and year. See them on a year calendar, filter by month or type, spot long weekends, and export the list as CSV.
 
-**🔗 Live demo:** https://holiday-finder-rushikesh.netlify.app
+Built with **HTML, Tailwind CSS and vanilla JavaScript (ES modules)**, with no frameworks. Data comes from the free [Nager.Date API](https://date.nager.at/).
 
-**💻 Source code:** https://github.com/rushikesh-io/holiday-finder-rushikesh
-
-**👤 Author:** Rushikesh Gaikwad ([@rushikesh-io](https://github.com/rushikesh-io))
+- **Live site:** https://holiday-finder-rushikesh.netlify.app
+- **Source code:** https://github.com/rushikesh-io/holiday-finder-rushikesh
+- **Author:** Rushikesh Gaikwad ([@rushikesh-io](https://github.com/rushikesh-io))
 
 ---
 
-## ✨ Features
+## Features
 
-### Core
-- 🌍 **Country dropdown** loaded live from the API (100+ countries, with flags)
-- 📅 **Year field** with previous/next buttons (1975–2075)
-- 🔎 Holidays are fetched and shown **dynamically** when you search
-- 📋 Each holiday shows its **name, date, local name, country code, holiday type and day of the week**
-- 🚫 Empty state: **"No holidays found for the selected country and year."**
-- ⏳ **Loading indicator** (spinner + skeleton cards) while the request runs
-- 🕘 **Search history** saved in `localStorage`
-  - click a previous search to **re-fetch and show it again**
-  - remove a single entry, or **Clear history** for all
-- 📱 Fully **responsive** (mobile → desktop)
-- 🛡️ API errors handled with `try/catch` and `.catch()`, plus a **Try again** button
+### Required
+- **Country dropdown** loaded from the API, with flags
+- **Year field** with previous/next buttons (1975 to 2075)
+- Holidays are **fetched and shown when you search**
+- Each holiday shows its **name, date, local name, country code, type and day of the week**
+- Empty result message: **"No holidays found for the selected country and year."**
+- **Loading indicator** while a request runs
+- **Search history** saved in `localStorage`: click a past search to fetch it again, remove single entries, or **Clear history**
+- **Responsive** from phones to desktops
+- Errors handled with `try/catch` and `.catch()`, with a **Try again** button
+- Logic organised into small, reusable functions and modules
 
 ### Bonus
-- 🗓️ **Filter by month**
-- 🏷️ **Filter by holiday type** (Public, Bank, School, Optional, Observance, Authorities)
-- 🌗 **Dark / Light mode** (remembers your choice, follows your system preference)
-- ⬇️ **Export to CSV** (exports exactly what the filters show)
-- 🔢 **Total number of holidays** found
-- ⭐ **Upcoming holidays highlighted**, with the next holiday, a countdown ("in 12 days") and past holidays dimmed
+- **Filter by month** (dropdown, or click a month in the year calendar)
+- **Filter by holiday type** (Public, Bank, School, Authorities, Optional, Observance)
+- **Dark and light theme**, remembered between visits
+- **Export to CSV**, exporting exactly what the filters show
+- **Total number of holidays** in the summary
+- **Upcoming holidays highlighted**: the next one is marked, each shows "in 12 days", and past ones are greyed out
 
 ### Extras
-- 🧾 Switch between **cards** and a **table** layout
-- 🔗 Shareable URLs, e.g. `?country=GB&year=2026`
-- 🏳️ Country flags, and a **National / Regional** label for each holiday
-- ♿ Accessible: semantic HTML, ARIA live regions, keyboard-friendly controls
-- 🔒 All API text is escaped before rendering
+- **Year at a glance:** 12 mini calendars with every holiday circled. Click a date to jump to it.
+- **Long weekend** tags for holidays on a Friday or Monday, and a note when a holiday falls on a weekend
+- **List or table** layout
+- **Shareable links**, e.g. `?country=GB&year=2026`
+- **Nationwide or regional** label on each holiday
+- Accessible: semantic HTML, keyboard focus styles, live regions, reduced-motion support
+- All API text is escaped before it reaches the page
 
 ---
 
-## 🛠️ Tech Stack
+## Design
 
-| Layer   | Tool |
-|---------|------|
-| Markup  | HTML5 |
-| Styling | Tailwind CSS 3 (built with the Tailwind CLI) |
-| Logic   | Vanilla JavaScript (ES modules) |
-| Data    | [Nager.Date Public Holiday API](https://date.nager.at/) (no API key) |
-| Hosting | Netlify |
+The design is based on printed wall calendars, where holidays are "red-letter days".
 
-## 📁 Project Structure
+| Token | Light | Use |
+|---|---|---|
+| Paper | `#F3F6F4` | Page background |
+| Ink | `#1F2A30` | Text and lines |
+| Letter red | `#C8102E` | Holiday dates |
+| Marker | `#F2C14E` | Today and the next holiday |
+| Rule | `#C9D3CF` | Dividers |
+
+Fonts: **Bricolage Grotesque** for headings and date numbers, **Instrument Sans** for body text. Colours are CSS variables, so the dark theme is a second set of values rather than a second set of classes.
+
+---
+
+## Project structure
 
 ```
-├── public/                 # Everything that gets deployed
-│   ├── index.html
-│   ├── css/styles.css      # Compiled Tailwind output
-│   └── js/
-│       ├── app.js          # State + event wiring
-│       ├── api.js          # Nager.Date requests and error handling
-│       ├── storage.js      # localStorage: search history, theme, layout
-│       ├── ui.js           # Rendering: cards, table, filters, history
-│       └── utils.js        # Date helpers, CSV export, HTML escaping
-├── src/input.css           # Tailwind source + custom components
-├── tailwind.config.js      # Theme colours, fonts, animations
-├── netlify.toml            # Netlify build settings
-└── package.json
+public/                       Everything that is deployed
+├── index.html
+├── css/styles.css            Compiled Tailwind output (generated by npm run build)
+└── js/
+    ├── main.js               Entry point: state, events, deciding what to render
+    ├── config.js             Constants (API URL, year range, storage keys, holiday types)
+    ├── services/
+    │   ├── holidayApi.js     Nager.Date requests and error handling
+    │   └── storage.js        localStorage: history, theme, layout
+    ├── features/
+    │   └── holidays.js       Pure holiday logic: normalise, annotate, filter, group, CSV
+    ├── components/           One file per part of the screen
+    │   ├── summary.js
+    │   ├── yearCalendar.js
+    │   ├── filters.js
+    │   ├── holidayList.js
+    │   ├── holidayTable.js
+    │   ├── searchHistory.js
+    │   ├── statusMessages.js
+    │   └── shared.js
+    └── utils/
+        ├── html.js           Safe HTML templates (auto-escaping)
+        ├── dates.js          Local-date helpers and calendar grid
+        └── csv.js            CSV writer and download helper
+src/input.css                 Tailwind source and theme variables
+tests/                        Unit tests (Node's built-in test runner)
+tailwind.config.cjs
+netlify.toml
 ```
 
-## 🚀 Run Locally
+**Why it is split this way:** network code, storage and pure logic are kept apart from the page. That makes each part easy to test and to change on its own. The `features` and `utils` modules don't touch the DOM, so the tests run in Node without a browser.
+
+---
+
+## Getting started
 
 ```bash
 npm install
-npm run build     # compile Tailwind -> public/css/styles.css
+npm run build     # compile Tailwind into public/css/styles.css
 npm start         # serve at http://localhost:5174
+npm test          # run the unit tests
 ```
 
-Run `npm run dev` while editing styles to rebuild the CSS automatically.
+Use `npm run dev` while editing styles to rebuild the CSS on every change.
 
-## 📡 API Reference
+## API
 
 ```
 GET https://date.nager.at/api/v3/AvailableCountries
 GET https://date.nager.at/api/v3/PublicHolidays/{year}/{countryCode}
 ```
 
-The API answers `204 No Content` when it has no data for a country and year (for example India), which the app shows as the "No holidays found" message.
+No API key is needed. The API replies `204 No Content` when it has no data for a country and year, which the app shows as the "No holidays found" message. Some countries, such as India, are not covered by this API.
 
-## 👤 Author
-
-**Rushikesh Gaikwad** · Aspiring Full-Stack Developer, Mumbai
-- GitHub: [@rushikesh-io](https://github.com/rushikesh-io)
-- Portfolio: [rushikeshux.framer.ai](https://rushikeshux.framer.ai/)
-
-## 📄 License
+## License
 
 MIT © Rushikesh Gaikwad
