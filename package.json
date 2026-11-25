@@ -1,0 +1,17 @@
+{
+  "name": "holiday-finder-rushikesh",
+  "author": "Rushikesh Gaikwad",
+  "version": "1.0.0",
+  "description": "Holiday Finder Rushikesh - search public holidays by country and year using the Nager.Date API. Built with HTML, Tailwind CSS and vanilla JavaScript.",
+  "private": true,
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./public/css/styles.css --minify",
+    "dev": "tailwindcss -i ./src/input.css -o ./public/css/styles.css --watch",
+    "start": "npx --yes serve public -l 5174"
+  },
+  "keywords": ["public-holidays", "nager-date", "tailwindcss", "javascript"],
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}
